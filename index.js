@@ -16,27 +16,14 @@ app.get('/', async (req, res) => {
     }
 
     try {
-        const response = await fetch('https://shop2game.com/api/auth/player_id_login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Origin': 'https://shop2game.com',
-                'Referer': 'https://shop2game.com/app/100067/idlogin',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            },
-            body: JSON.stringify({
-                app_id: 100067,
-                login_id: uid,
-                app_server_id: 0
-            })
-        });
-
+        const response = await fetch(`https://bhauxinfo2.vercel.app/bhau?uid=${uid}&region=${region}`);
         const data = await response.json();
         
-        if (data && data.nickname) {
+        let nickname = data.nickname || (data.basicInfo && data.basicInfo.nickname);
+
+        if (nickname) {
             return res.json({
-                nickname: data.nickname,
+                nickname: nickname,
                 region_code: region,
                 region_name: "Bangladesh"
             });
