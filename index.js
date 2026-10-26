@@ -16,32 +16,33 @@ app.get('/', async (req, res) => {
     }
 
     try {
-        const apiRes = await fetch(`https://api.freefireinfo.in/uid?uid=${uid}`);
-        const data = await apiRes.json();
-        const nickname = data.nickname || data.name;
+        const response = await fetch('https://shop2game.com/api/auth/player_id_login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Origin': 'https://shop2game.com',
+                'Referer': 'https://shop2game.com/app/100067/idlogin',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            },
+            body: JSON.stringify({
+                app_id: 100067,
+                login_id: uid,
+                app_server_id: 0
+            })
+        });
 
-        if (nickname) {
+        const data = await response.json();
+        
+        if (data && data.nickname) {
             return res.json({
-                nickname: nickname,
+                nickname: data.nickname,
                 region_code: region,
                 region_name: "Bangladesh"
             });
+        } else {
+            return res.status(404).json({ error: "ID NOT FOUND" });
         }
-
-        // ব্যাকআপ সোর্স
-        const res2 = await fetch(`https://bhauxinfo2.vercel.app/bhau?uid=${uid}&region=${region}`);
-        const data2 = await res2.json();
-        const nickname2 = data2.nickname || (data2.basicInfo && data2.basicInfo.nickname);
-
-        if (nickname2) {
-            return res.json({
-                nickname: nickname2,
-                region_code: region,
-                region_name: "Bangladesh"
-            });
-        }
-
-        return res.status(404).json({ error: "ID NOT FOUND IN SUPPORTED REGIONS" });
 
     } catch (error) {
         return res.status(500).json({ error: error.message });
